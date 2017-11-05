@@ -1,2 +1,2 @@
-# Machine Learning w/ scikit-learn
-* my notes and code for learning ML w/ scikit-learn
+# Machine Learning
+* my notes -- studying ML in Action book
