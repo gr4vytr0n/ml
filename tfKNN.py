@@ -1,19 +1,31 @@
-# need to learn more about tensorflow before I can do kNN with it
-
+import operator
 import numpy as np
 import tensorflow as tf
 
-dataset = np.array([[0, 0.2], [1.0, 0], [0, 1.0], [1.0, 0.5]])
-testset = np.array([0, 0.5])
+dataset = np.array([[0, 0.2], [1.0, 0], [0, 1.0], [1.0, 0.5], [1.0, 0.2], [1.0, 1.0], [0, 0], [1.0, 0.7]])
+labels = ['A', 'B', 'A', 'B', 'B', 'B', 'A', 'B']
+
+testset = np.array([1.0, 0.5])
 
 k = 3
 
-dsetSize = dataset.shape[0]  
-distance = np.square(np.add(np.tile(testset, (4, 1)), np.negative(dataset))).sum(axis=1).argsort()
+datasetSize = dataset.shape[0]
+tiledTestset = np.tile(testset, (datasetSize, 1))
+diffTrainAndTest = tf.subtract(tiledTestset, dataset)
+squared = tf.square(diffTrainAndTest)
+reducedSum = tf.reduce_sum(squared, axis=1)
 
-prediction = tf.argmin(tf.convert_to_tensor(distance, np.int64), 0)
-print(prediction)
+argSorted = tf.py_func(np.argsort, [reducedSum], tf.int64, stateful=False)
+argMin = tf.argmin(argSorted, 0)
+
 sess = tf.Session()
-sess.run(prediction)
 
+results = sess.run(argSorted)
 
+classCount = {}
+for i in range(k):
+    voteLabel = labels[results[i]]
+    classCount[voteLabel] = classCount.get(voteLabel,0) + 1
+sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
+
+print(sortedClassCount[0][0]) 

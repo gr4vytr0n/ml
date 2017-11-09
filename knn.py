@@ -9,7 +9,7 @@ def classify0(inX, dataset, labels, k):
     squareDistances = sqDiffMat.sum(axis=1)
     distances = squareDistances**0.5
     sortedDistances = distances.argsort()
-    
+
     classCount = {}
     for i in range(k):
         voteLabel = labels[sortedDistances[i]]
