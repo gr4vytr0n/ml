@@ -4,7 +4,7 @@ from categorize_labels import categorize_labels
 
 def preprocess_data(filename):
   matrix = to_matrix(filename)
-  labels = get_labels(filename)
-  label_categories, categories = categorize_labels(labels)
+  labels_raw = get_labels(filename)
+  labels, categories = categorize_labels(labels_raw)
 
-  return matrix, label_categories, categories
+  return matrix, labels, categories
