@@ -1,4 +1,5 @@
 from math import log
+import operator
 
 def calcShannonEntropy(dataset):
   numEntries = len(dataset)
@@ -42,6 +43,32 @@ def chooseBestFeatureToSplit(dataset):
       bestFeature = i
   return bestFeature
 
+def majorityCnt(classList):
+  classCount = {}
+  for vote in classList:
+    if vote not in classCount.keys():
+      classCount[vote] = 0
+    classCount[vote] += 1
+  sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+  return sortedClassCount[0][0]
+
+def createTree(dataset, labels):
+  classList = [example[-1] for example in dataset]
+  if classList.count(classList[0]) == len(classList):
+    return classList[0]
+  if len(dataset[0]) == 1:
+    return majorityCnt(classList)
+  bestFeat = chooseBestFeatureToSplit(dataset)
+  bestFeatLabel = labels[bestFeat]
+  myTree = {bestFeatLabel:{}}
+  del(labels[bestFeat])
+  featValues = [example[bestFeat] for example in dataset]
+  uniqueVals = set(featValues)
+  for value in uniqueVals:
+    subLabels = labels[:]
+    myTree[bestFeatLabel][value] = createTree(splitDataset(dataset, bestFeat, value), subLabels)
+  return myTree
+
 if __name__ == '__main__':
   def createDataset():
     dataset = [ [1, 1, 'yes'],
@@ -54,4 +81,4 @@ if __name__ == '__main__':
 
   data, labels = createDataset()
 
-  print(chooseBestFeatureToSplit(data))
+  print(createTree(data, labels))
