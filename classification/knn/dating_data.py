@@ -1,7 +1,9 @@
 from preprocess_data import preprocess_data
 from normalize import normalize
 from plot_data import plot_data
+from to_matrix import to_matrix
 from knn import classify0
+from numpy import array
 
 matrix, labels, categories = preprocess_data('datingTestSet.txt')
 
@@ -22,4 +24,16 @@ def test():
       error_count += 1.0
   print('total error rate: %f' % (error_count / float(num_test_vectors)))    
 
-test()
+#test()
+
+# Classify a person with classifier
+def classifyPerson():
+  resultList = ['not at all', 'in small doses', 'in large doses']
+  gaming = float(input('percent time playing video games?'))
+  flyerMiles = float(input('frequent flyer miles earned each year?'))
+  iceCream = float(input('liters of ice cream consumed per year?'))
+  inArr = array([flyerMiles, gaming, iceCream])
+  classifierResult = classify0((inArr-min_vals)/ranges, normalized_matrix, labels, 3)
+  print('You will probably like this person: ', resultList[classifierResult - 1])
+
+classifyPerson()
