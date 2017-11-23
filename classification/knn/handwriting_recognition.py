@@ -12,7 +12,7 @@ def read_files(directory, filenames):
     with open(file) as f:
       files.append(f.read())
 
-  chdir(saveCwd)    
+  chdir(saveCwd)
   return files
 
 def get_filenames(directories):
@@ -23,14 +23,14 @@ def get_filenames(directories):
 
 def prep_data(data):
   vectors = zeros((len(data), 1024))
-  for item in data:
-    lines = item.strip().split('\n')
+  for h in range(len(data)):
+    lines = data[h].split('\n')
+    vector = zeros((1, 1024))
     for i in range(32):
       line = lines[i]
-      vector = zeros((1, 1024))
       for j in range(32):
         vector[0, 32*i+j] = int(line[j])
-      vectors[i, :] = vector
+    vectors[h, :] = vector
   return vectors
 
 def classifiyHandwriting(testData, trainingData, filenames):
@@ -44,8 +44,7 @@ def classifiyHandwriting(testData, trainingData, filenames):
     trainingLabels.append(label)
   errorCount = 0.0
   for test in range(len(testData)):
-    print(testData[test])
-    #classifierResult = classify0(testData[test], trainingData, trainingLabels, 3)
+    classifierResult = classify0(testData[test], trainingData, trainingLabels, 3)
     print('classifier result: {}, real answer: {}'.format(classifierResult, testLabels[test]))
     if (classifierResult != testLabels[test]):
       errorCount += 1.0
