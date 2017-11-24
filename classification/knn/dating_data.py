@@ -1,7 +1,6 @@
 from preprocess_data import preprocess_data
 from normalize import normalize
 from plot_data import plot_data
-from to_matrix import to_matrix
 from knn import classify0
 from numpy import array
 
