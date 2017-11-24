@@ -45,7 +45,7 @@ def classifiyHandwriting(testData, trainingData, filenames):
   errorCount = 0.0
   for test in range(len(testData)):
     classifierResult = classify0(testData[test], trainingData, trainingLabels, 3)
-    print('classifier result: {}, real answer: {}'.format(classifierResult, testLabels[test]))
+    # print('classifier result: {}, real answer: {}'.format(classifierResult, testLabels[test]))
     if (classifierResult != testLabels[test]):
       errorCount += 1.0
   print('total errors: {}'.format(errorCount))
@@ -53,8 +53,16 @@ def classifiyHandwriting(testData, trainingData, filenames):
 
 
 if __name__ == '__main__':
+  from time import perf_counter
+
   directories = ['testDigits', 'trainingDigits']
   filenames = get_filenames(directories)
   testData = prep_data(read_files(directories[0], filenames[0]))
   trainingData = prep_data(read_files(directories[1], filenames[1]))
+
+  t0 = perf_counter()
+
   classifiyHandwriting(testData, trainingData, filenames)
+
+  t1 = perf_counter()
+  print('elapsed time: {}'.format(t1 - t0))

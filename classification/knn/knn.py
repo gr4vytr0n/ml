@@ -3,7 +3,6 @@ import operator
 
 def classify0(inX, dataset, labels, k):
     datasetSize = dataset.shape[0]
-
     diffMat = tile(inX , (datasetSize, 1)) - dataset
     sqDiffMat = diffMat**2
     squareDistances = sqDiffMat.sum(axis=1)
