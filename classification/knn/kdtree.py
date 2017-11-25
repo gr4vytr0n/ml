@@ -1,24 +1,35 @@
-import numpy
+import numpy as np
 
-def kdtree(data, leafsize=10):
-  ndim = data.shape[0]
-  ndata = data.shape[1]
+# adapted from wikipedia
+class Node(object):
+  def __init__(self, location, left_child, right_child):
+    self.location = location
+    self.left_child = left_child
+    self.right_child = right_child
 
-  # hyper-rectangle or is it hyperplane ??
-  hrect = numpy.zeros((2, ndim))
-  hrect[0,:] = data.min(axis=1)
-  hrect[1,:] = data.max(axis=1)
+  def __str__(self):
+    return 'LOCATION: {} LEFT: {} RIGHT: {}'.format(self.location, self.left_child, self.right_child)
 
-  # root
-  idx = numpy.argsort(data[0,:], kind='mergesort')
-  print(numpy.sort(data, axis=-1))
-  data[:,:] = data[:,idx]
-  splitval = data[ndim//2,:]
+def kdtree(data, depth = 0):
+  try:
+    k = len(data[0])
+  except IndexError as e:
+    return None
+  # axis of feature to split on
+  axis = depth % k 
 
-  # left_hrect = hrect.copy()
-  # right_hrect = hrect.copy()
-  # left_hrect[1,0] = splitval
+  # sort data on axis
+  sortedData = data[data[:, axis].argsort()]
 
+  # median for split point
+  median = len(data) // 2
+
+  # create node and construct subtrees
+  return Node(
+    location = sortedData[median],
+    left_child = kdtree(sortedData[:median], (depth + 1)),
+    right_child = kdtree(sortedData[(median + 1):], (depth + 1))
+  )
 
 if __name__ == '__main__':
   from preprocess_data import preprocess_data
@@ -27,4 +38,5 @@ if __name__ == '__main__':
   matrix, labels, categories = preprocess_data('datingTestSet.txt')
   normalized_matrix, ranges, min_vals, max_vals  = normalize(matrix)
   
-  kdtree(normalized_matrix)
+  print(kdtree(normalized_matrix))
+  #print(kdtree(np.array([(2,3), (5,4), (9,6), (4,7), (8,1), (7,2)])))
