@@ -52,6 +52,7 @@ def classifiyHandwriting(testData, trainingData, filenames):
   print('total error rate: {}'.format(errorCount/float(len(testData))))
 
 
+# NOTE: dataset contains only ones and zeros --- no need to normalize data
 if __name__ == '__main__':
   from time import perf_counter
 
