@@ -6,6 +6,7 @@ from kdtree import kdtree
 def searchTree(tree, test):
   def distance(testNode, currentNode):
     return (((testNode - currentNode)**2).sum(axis=0))**0.5
+
   # build array of nodes from tree
   # first node is root
   # then choose next node from left and right based on nearest distance (add to array of nodes)
@@ -36,7 +37,7 @@ def searchTree(tree, test):
       right_child = atNode['right_child']['location']
       left_dist = distance(test, left_child)
       right_dist = distance(test, right_child)
-    
+
       if left_dist > right_dist:
         # right is closer
         result.append(right_child)
@@ -52,23 +53,31 @@ if __name__ == '__main__':
   from knn import classify0
   from preprocess_data import preprocess_data
   from normalize import normalize
-  
-  # labelCategories = ['not at all', 'in small doses', 'in large doses']
-
-  # matrix, labels, categories = preprocess_data('datingTestSet.txt')
-  # normalized_matrix, ranges, min_vals, max_vals  = normalize(matrix)
-
-  # tree = kdtree(normalized_matrix)
-
-  data = np.array(list(map(list, [(2,3), (5,4), (9,6), (4,7), (8,1), (7,2)])))
-  nData, rData, minData, maxData =  normalize(data)
-  testDataLabels =['BAD', 'GOOD', 'GOOD', 'BAD', 'GOOD', 'GOOD']
-  tree = kdtree(nData)
-  nTestData = (np.array([1,3])-minData)/rData
+  resultList = ['not at all', 'in small doses', 'in large doses']
+  matrix, labels, categories = preprocess_data('datingTestSet.txt')
+  print(categories)
+  normalized_matrix, ranges, min_vals, max_vals  = normalize(matrix)
+  tree = kdtree(normalized_matrix)
+  nTestData = (np.array([.8,400,.5])-min_vals)/ranges
   searchResults = searchTree(tree, nTestData)
   searchResultsLabels = []
   for i in searchResults.tolist():
-    searchResultsLabels.append(nData.tolist().index(i))
+    # these index searches are probably really slowing this down
+    searchResultsLabels.append(normalized_matrix.tolist().index(i))
   classIndex = classify0(nTestData, searchResults, searchResultsLabels, 1)
-  classLabel = testDataLabels[classIndex]
-  print('[1, 3] <--', classLabel,'   ', data[classIndex], '<-- Nearest')
+  print(labels[classIndex])
+  classLabel = labels[classIndex]
+  print(nTestData, '<--', resultList[classLabel-1],'   ', matrix[classIndex].tolist(), '<-- Nearest')
+
+  # data = np.array(list(map(list, [(2,3), (5,4), (9,6), (4,7), (8,1), (7,2)])))
+  # nData, rData, minData, maxData =  normalize(data)
+  # trainingDataLabels =['BAD', 'GOOD', 'GOOD', 'BAD', 'GOOD', 'GOOD']
+  # tree = kdtree(nData)
+  # nTestData = (np.array([1,3])-minData)/rData
+  # searchResults = searchTree(tree, nTestData)
+  # searchResultsLabels = []
+  # for i in searchResults.tolist():
+  #   searchResultsLabels.append(nData.tolist().index(i))
+  # classIndex = classify0(nTestData, searchResults, searchResultsLabels, 1)
+  # classLabel = trainingDataLabels[classIndex]
+  # print('[1, 3] <--', classLabel,'   ', data[classIndex], '<-- Nearest')
