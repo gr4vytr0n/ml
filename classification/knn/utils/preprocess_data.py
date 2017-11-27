@@ -13,17 +13,18 @@ def preprocess_data(directory, filename):
     data, labels_list = to_array(filename)
 
     # create mapping of labels associated with dataset and key to index labels
-    label_indices, labels = categorize_labels(labels_list)
+    labeling = categorize_labels(labels_list)
 
     # normalize data
-    normalized_data, ranges, min_vals, max_vals = normalize(data)
+    normalizing = normalize(data)
 
     # restore saved cwd
     chdir(saved_cwd)
 
-    return normalized_data, labels, label_indices
+    return data, normalizing, labeling
 
+    # data, normalizing, labeling = preprocess_data('directory', 'file.txt')
 
-if __name__ == '__main__':
-    n_data, labels, label_indices = preprocess_data('dating_data', 'datingTestSet.txt')
-    print(labels)
+    # n_data, ranges, min_val, max_val = normalizing
+
+    # label_indices, labels = labeling

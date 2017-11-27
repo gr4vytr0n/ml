@@ -9,8 +9,10 @@ from preprocess_data import preprocess_data
 from knn import classify0
 
 
-n_array, labels, label_indices = preprocess_data(
+data, normalizing, labeling = preprocess_data(
     getcwd() + '/dating_data', 'datingTestSet.txt')
+n_array, ranges, min_vals, max_vals = normalizing
+label_indices, labels = labeling
 
 
 #plot_data(normalized_matrix, label_categories, categories)
@@ -22,15 +24,16 @@ def test():
     num_test_vectors = int(m * ho_ratio)
     error_count = 0.0
     for i in range(num_test_vectors):
-        classifier_results = classify0(n_array[i, :], n_array[num_test_vectors:m, :],
+        classifier_results = classify0((data[i, :] - min_vals) / ranges, n_array[num_test_vectors:m, :],
                                        label_indices[num_test_vectors:], 3)
-        print('classifier answer: {}, real answer: {}'.format(labels[classifier_results], labels[label_indices[i]]))
+        print('classifier answer: {}, real answer: {}'.format(
+            labels[classifier_results], labels[label_indices[i]]))
         if (labels[classifier_results] != labels[label_indices[i]]):
             error_count += 1.0
     print('total error rate: {}'.format(error_count / float(num_test_vectors)))
 
 
-test()
+#test()
 
 # Classify a person with classifier
 
@@ -42,9 +45,9 @@ def classifyPerson():
     iceCream = float(input('liters of ice cream consumed per year?'))
     inArr = array([flyerMiles, gaming, iceCream])
     classifierResult = classify0(
-        (inArr - min_vals) / ranges, normalized_matrix, labels, 3)
+        (inArr - min_vals) / ranges, n_array, label_indices, 3)
     print('You will probably like this person: ',
           resultList[classifierResult - 1])
 
 
-# classifyPerson()
+classifyPerson()
