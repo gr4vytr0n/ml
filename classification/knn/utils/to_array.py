@@ -1,14 +1,9 @@
 from numpy import zeros, float32
-from os import chdir, getcwd
 
 # turn data from tab seperated file into an array
 
 
-def to_array(dir, filename):
-    # save cwd and change cwd
-    saved_cwd = getcwd()
-    chdir(dir)
-
+def to_array(filename):
     with open(filename) as file:
         lines = []
         for file_line in file.readlines():
@@ -24,12 +19,5 @@ def to_array(dir, filename):
             label_list = line_list[-1]
             features_array[i, :] = feature_list[0:]
             labels_array[i] = label_list
-            
-    # restore saved cwd
-    chdir(saved_cwd)
 
     return features_array, labels_array
-
-
-if __name__ == '__main__':
-    print(to_array('dating_data', 'datingTestSet.txt'))
