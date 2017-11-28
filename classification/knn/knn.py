@@ -3,18 +3,19 @@ import operator
 
 
 def classify0(inX, dataset, labels, k):
-    datasetSize = dataset.shape[0]
-    diffMat = tile(inX, (datasetSize, 1)) - dataset
-    sqDiffMat = diffMat**2
-    squareDistances = sqDiffMat.sum(axis=1)
-    distances = squareDistances**0.5
-    sortedDistances = distances.argsort()
+    dataset_size = dataset.shape[0]
+    diff_mat = tile(inX, (dataset_size, 1)) - dataset
+    sq_diff_mat = diff_mat**2
+    squared_distances = sq_diff_mat.sum(axis=1)
+    distances = squared_distances**0.5
+    sorted_distancess = distances.argsort()
 
-    classCount = {}
+    class_count = {}
     for i in range(k):
-        voteLabel = labels[sortedDistances[i]]
-        classCount[voteLabel] = classCount.get(voteLabel, 0) + 1
-    sortedClassCount = sorted(
-        classCount.items(), key=operator.itemgetter(1), reverse=True)
+        vote_label = labels[sorted_distancess[i]]
+        class_count[vote_label] = class_count.get(vote_label, 0) + 1
 
-    return sortedClassCount[0][0]
+    sorted_class_count = sorted(
+        class_count.items(), key=operator.itemgetter(1), reverse=True)
+
+    return sorted_class_count[0][0]
