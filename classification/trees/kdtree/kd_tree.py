@@ -52,9 +52,7 @@ def knn_search_tree(tree, test):
             left_dist = distance(test, left_child)
             right_dist = distance(test, right_child)
 
-            # if the left and right distance are equal an infinite loop
-            # would be created -- what to do?
-            if left_dist > right_dist:
+            if left_dist >= right_dist:
                 current_best = right_child
                 at_node = at_node['right_child']
             elif right_dist > left_dist:
