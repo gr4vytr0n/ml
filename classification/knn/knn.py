@@ -1,10 +1,17 @@
+'''
+    kNN (k-Nearest Neighbor) classification algorithm
+'''
+
+from operator import itemgetter
 from numpy import tile
-import operator
 
 
-def classify0(inX, dataset, labels, k):
+def classify(test_set, dataset, labels, k):
+    '''
+        Classify k-Nearest neighbors
+    '''
     dataset_size = dataset.shape[0]
-    diff_mat = tile(inX, (dataset_size, 1)) - dataset
+    diff_mat = tile(test_set, (dataset_size, 1)) - dataset
     sq_diff_mat = diff_mat**2
     squared_distances = sq_diff_mat.sum(axis=1)
     distances = squared_distances**0.5
@@ -16,6 +23,6 @@ def classify0(inX, dataset, labels, k):
         class_count[vote_label] = class_count.get(vote_label, 0) + 1
 
     sorted_class_count = sorted(
-        class_count.items(), key=operator.itemgetter(1), reverse=True)
-
+        class_count.items(), key=itemgetter(1), reverse=True)
+    # print(sorted_class_count)
     return sorted_class_count[0][0]

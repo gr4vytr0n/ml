@@ -4,4 +4,3 @@
 # classification
 * k-Nearest neighbors
 * decision trees
-* naïve Bayes (in progress)

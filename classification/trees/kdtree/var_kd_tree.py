@@ -25,32 +25,32 @@ def kd_tree(data, var_i, cnt=0):
     }
 
 def knn_search_tree(tree, t_node, variance_sort_indices, k):
-    def test_value(t_nodecurrent_node):
+    def test_value(t_node, current_node):
         return t_node < current_node
 
     def test_bounds(bounds):
-        
+        print(bounds)
 
     root = tree['location']
     current_best = root
     at_node = tree
 
     cnt = 0
-    while cnt < 5:
+    while True:
         axis = where(variance_sort_indices == (cnt % k))[0][0]
-        current_best_test = test(t_node[axis], current_best[axis])
-
+        current_best_test = test_value(t_node[axis], current_best[axis])
+        print(at_node['bounds'])
         if at_node['left_child'] == None and at_node['right_child'] == None:
             break
         elif at_node['left_child'] == None:
             at_node = at_node['right_child']
-            if test(t_node[axis], at_node['location'][axis]):
+            if test_value(t_node[axis], at_node['location'][axis]):
                 current_best = at_node['location']
             else:
                 break
         elif at_node['right_child'] == None:
             at_node = at_node['left_child']
-            if test(t_node[axis], at_node['location'][axis]):
+            if test_value(t_node[axis], at_node['location'][axis]):
                 current_best = at_node['location']
             else:
                 break
@@ -62,7 +62,7 @@ def knn_search_tree(tree, t_node, variance_sort_indices, k):
 
             # if the left and right distance are equal an infinite loop
             # would be created -- what to do?
-            if left_dist > right_dist:
+            if left_dist >= right_dist:
                 current_best = right_child
                 at_node = at_node['right_child']
             elif right_dist > left_dist:

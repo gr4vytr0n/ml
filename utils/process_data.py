@@ -1,13 +1,21 @@
+'''
+    Process data for use
+'''
+
 from os import chdir, getcwd
 from normalize import normalize
 from to_array import to_array
 from categorize_labels import categorize_labels
 
 
-def preprocess_data(directory, filename):
+def process_data(filename):
+    '''
+        Read data from file and prepare for processing
+    '''
+
     # save cwd and change cwd
     saved_cwd = getcwd()
-    chdir(directory)
+    chdir('datasets')
 
     # construct array from tab delimited file
     data, labels_list = to_array(filename)
@@ -22,9 +30,3 @@ def preprocess_data(directory, filename):
     chdir(saved_cwd)
 
     return data, normalizing, labeling
-
-    # data, normalizing, labeling = preprocess_data('directory', 'file.txt')
-
-    # n_data, ranges, min_val, max_val = normalizing
-
-    # label_indices, labels = labeling
