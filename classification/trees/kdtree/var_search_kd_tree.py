@@ -21,7 +21,7 @@ def test():
         Test kdtree searching algorithm
     '''
     data, normalizing, labeling = process_data('datingTestSet.txt')
-    normalized_dataset, ranges, min_vals, max_vals = normalizing
+    normalized_dataset, ranges, min_vals = normalizing[:-1]
     label_indices, labels = labeling
 
     # set size of test set
@@ -36,7 +36,7 @@ def test():
 
     tree = kd_tree(training_set, variance=variance)
 
-    count_same = 0
+    error_count = 0
     for i in range(test_dataset_size):
         # find nearest neighbor
         normalized_test_node = (data[:test_dataset_size][i] - min_vals) / ranges
@@ -49,7 +49,8 @@ def test():
                                                             (training_set[:, 2] == search_results[2])))[0]]][0]
 
         if kd_label is not labels[normalized_test_node_index]:
-            count_same += 1
-    return count_same
+            error_count += 1
+    return error_count, test_dataset_size
 
-print(test() / 100)
+error_count, test_dataset_size = test()
+print(error_count / test_dataset_size)

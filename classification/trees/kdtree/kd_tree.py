@@ -10,11 +10,11 @@ def kd_tree(data, cnt=0, variance=[]):
     '''
         Build a k-D tree
     '''
-
     try:
         k = len(data[0])
-    except IndexError as e:
+    except IndexError:
         return None
+
     if variance == []:
         # axis of feature to split on
         axis = cnt % k
@@ -50,7 +50,7 @@ def nn_search_tree(tree, t_node, variance=[]):
     else:
         def test_value(test_node, current_node):
             return test_node < current_node
-    
+
     cnt = 0
     while True:
         if variance == []:
@@ -85,7 +85,7 @@ def nn_search_tree(tree, t_node, variance=[]):
                 if test_value(t_node[axis], at_node['location'][axis]):
                     current_best = at_node['location']
                 else:
-                    break                
+                    break
         else:
             left_child = at_node['left_child']['location']
             right_child = at_node['right_child']['location']
@@ -101,8 +101,8 @@ def nn_search_tree(tree, t_node, variance=[]):
                     current_best = left_child
                     at_node = at_node['left_child']
             else:
-                left_test = t_node[axis] - left_child[axis]
-                right_test = t_node[axis] - right_child[axis]
+                left_test = abs(t_node[axis] - left_child[axis])
+                right_test = abs(t_node[axis] - right_child[axis])
 
                 if left_test >= right_test:
                     current_best = right_child
@@ -111,6 +111,5 @@ def nn_search_tree(tree, t_node, variance=[]):
                     current_best = left_child
                     at_node = at_node['left_child']
         cnt += 1
-               
 
     return current_best
