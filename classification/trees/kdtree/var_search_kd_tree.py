@@ -1,5 +1,5 @@
 '''
-    Search k-D tree by using distances
+    Search k-D tree by using variances of axes
 '''
 
 
@@ -13,6 +13,7 @@ insert_paths()
 from knn import classify
 from kd_tree import kd_tree, nn_search_tree
 from process_data import process_data
+from variances import variances
 
 
 def test():
@@ -31,7 +32,9 @@ def test():
     training_set = normalized_dataset[test_dataset_size:]
     training_set_label_indices = label_indices[test_dataset_size:]
 
-    tree = kd_tree(training_set)
+    variance = variances(training_set)
+
+    tree = kd_tree(training_set, variance=variance)
 
     count_same = 0
     for i in range(test_dataset_size):
@@ -39,7 +42,7 @@ def test():
         normalized_test_node = (data[:test_dataset_size][i] - min_vals) / ranges
         normalized_test_node_index = label_indices[:test_dataset_size][i]
 
-        search_results = nn_search_tree(tree, normalized_test_node)
+        search_results = nn_search_tree(tree, normalized_test_node, variance)
 
         kd_label = labels[training_set_label_indices[where(((training_set[:, 0] == search_results[0]) &
                                                             (training_set[:, 1] == search_results[1]) &

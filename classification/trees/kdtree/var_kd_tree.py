@@ -1,4 +1,4 @@
-from numpy import var, array, where
+    from numpy import var, array, where
 
 def variances(data):
     variances = var(data, axis=0)
@@ -60,8 +60,6 @@ def knn_search_tree(tree, t_node, variance_sort_indices, k):
             left_dist = t_node[axis] - left_child[axis]
             right_dist = t_node[axis] - right_child[axis]
 
-            # if the left and right distance are equal an infinite loop
-            # would be created -- what to do?
             if left_dist >= right_dist:
                 current_best = right_child
                 at_node = at_node['right_child']
