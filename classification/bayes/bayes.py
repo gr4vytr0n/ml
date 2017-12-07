@@ -3,25 +3,28 @@
 
     choosing the decision with the highest probability
 '''
+from re import split
+from numpy import zeros, ones, array, log
 
-from numpy import ones, log, array
 
-
-def load_dataset():
+def load_document(filename):
     '''
-        Word vectors from lists
+        Open file(s) and return list of contents
     '''
-    documents = [['my', 'dog', 'has', 'flea', 'problem', 'help', 'please'],
-                 ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
-                 ['my', 'dalmation', 'is', 'so', 'cute', 'I', 'love', 'him'],
-                 ['stop', 'posting', 'stupid', 'worthless', 'garbage'],
-                 ['mr', 'licks', 'ate', 'my', 'steak',
-                  'how', 'to', 'stop', 'him'],
-                 ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']]
+    read_file = ''
+    with open(filename, encoding='Windows-1252') as document:
+        read_file = document.read()
 
-    classes = [0, 1, 0, 1, 0, 1]
+    return read_file
 
-    return documents, classes
+
+def tokenize(the_string):
+    '''
+        Tokenize string
+    '''
+    tokens_list = split(r'\W*', the_string)
+
+    return [tokens.lower() for tokens in tokens_list if len(tokens) > 2]
 
 
 def create_vocabulary_list(dataset):
@@ -50,7 +53,8 @@ def word_set_to_vector(vocabulary_list, input_set):
 
     return return_vector
 
-def word_bag_to_vector(vocabulary_list,input_set):
+
+def word_bag_to_vector(vocabulary_list, input_set):
     '''
         Vectorize vocabulary list -- bag of words
     '''
@@ -59,15 +63,15 @@ def word_bag_to_vector(vocabulary_list,input_set):
     for word in input_set:
         if word in vocabulary_list:
             return_vector[vocabulary_list.index(word)] += 1
-    
+
     return return_vector
 
 
 def trainer(train_array, train_category):
     '''
         Calculating probabilities from vectors
-        Returns: the probability of class 0, the probability of class 1, and probability of being abusive
-
+        Returns: the probability of class 0, the probability of class 1,
+                 and probability of being abusive
     '''
     number_words = len(train_array[0])
 
@@ -88,34 +92,82 @@ def trainer(train_array, train_category):
 
     return class_0_prob, class_1_prob, sum(train_category) / float(len(train_array))
 
+
 def classifier(test_vector, class_0_vector, class_1_vector, class_1_prob):
     '''
         Naive Bayes classifier
     '''
-    p1 = sum(test_vector * class_1_vector) + log(class_1_prob)
-    p0 = sum(test_vector * class_0_vector) + log(1.0 - class_1_prob)
+    prob_1 = sum(test_vector * class_1_vector) + log(class_1_prob)
+    prob_0 = sum(test_vector * class_0_vector) + log(1.0 - class_1_prob)
 
-    if p1 > p0:
+    if prob_1 > prob_0:
         return 1
     else:
         return 0
 
+
 if __name__ == '__main__':
-    def test():
-        ''' test module '''
-        posts, classes = load_dataset()
-        vocabulary_list = create_vocabulary_list(posts)
+    from random import uniform
 
-        train_array = []
-        for post_in_docs in posts:
-            train_array.append(word_set_to_vector(
-                vocabulary_list, post_in_docs))
+    def process_documents():
+        ''' 
+            process documents
+            returns ham and spam documents as tuple
+        '''
+        abs_path = '/media/gtron/files/ml/ml/classification/bayes/'
+        ham_documents = []
+        spam_documents = []
+        for i in range(1, 26):
+            ham_documents.append(tokenize(load_document('{}email/ham/{}.txt'.format(abs_path, str(i)))))
+            spam_documents.append(tokenize(load_document('{}email/spam/{}.txt'.format(abs_path, str(i)))))
+    
+        return ham_documents, spam_documents
+    
 
-        p0v, p1v, abusive = trainer(array(train_array), array(classes))
+    
+    def spam_test(documents):
+        ''' test documents for spam '''
+        vocabulary_list = create_vocabulary_list(documents)
 
-        test_vector = ['love', 'my', 'dalmation']
-        test_array = array(word_set_to_vector(vocabulary_list, test_vector))
+        classes = zeros(25, dtype=int).tolist() + ones(25, dtype=int).tolist()
 
-        print('classification: {}'.format(classifier(test_array, p0v, p1v, abusive)))
+        docs_copy = documents[:]
 
-    test()
+        training_set = []
+        training_classes = []
+
+        test_set = []
+        test_classes = []
+
+        for _ in range(10):
+            rand_idx = int(uniform(0, len(docs_copy)))
+            test_set.append(docs_copy[rand_idx])
+            test_classes.append(classes[rand_idx])
+            del(docs_copy[rand_idx])
+            del(classes[rand_idx])
+        
+        training_classes = classes
+
+        for doc in docs_copy:
+            training_set.append(word_set_to_vector(vocabulary_list, doc))
+        
+        p0v, p1v, p_spam = trainer(array(training_set), array(training_classes))
+
+        error_count = 0
+
+        for idx, doc in enumerate(test_set):
+            word_vector = word_set_to_vector(vocabulary_list, doc)
+            if classifier(array(word_vector), p0v, p1v, p_spam) != test_classes[idx]:
+                error_count += 1
+        
+        return float(error_count) / len(test_set)
+
+
+    hams, spams = process_documents()
+
+    err_result = 0.0
+    for _ in range(10):
+        err_result += spam_test(hams + spams)
+
+    print(err_result / 10)
+
