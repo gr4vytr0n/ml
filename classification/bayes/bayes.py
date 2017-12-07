@@ -3,8 +3,9 @@
 
     choosing the decision with the highest probability
 '''
+
 from re import split
-from numpy import zeros, ones, array, log
+from numpy import ones, array, log
 
 
 def load_document(filename):
@@ -22,7 +23,7 @@ def tokenize(the_string):
     '''
         Tokenize string
     '''
-    tokens_list = split(r'\W*', the_string)
+    tokens_list = split(r'\W+', the_string)
 
     return [tokens.lower() for tokens in tokens_list if len(tokens) > 2]
 
@@ -39,30 +40,21 @@ def create_vocabulary_list(dataset):
     return list(vocabulary_set)
 
 
-def word_set_to_vector(vocabulary_list, input_set):
+def word_to_vector(vocabulary_list, input_set, word_occurences='set'):
     '''
-        Vectorize vocabulary list -- set of words
+        Vectorize vocabulary list
+        -- set of words or bag of words
     '''
     return_vector = [0] * len(vocabulary_list)
 
     for word in input_set:
         if word in vocabulary_list:
-            return_vector[vocabulary_list.index(word)] = 1
+            if word_occurences == 'set':
+                return_vector[vocabulary_list.index(word)] = 1
+            else:
+                return_vector[vocabulary_list.index(word)] += 1
         else:
             print('The word: {} is not in my Vocabulary!'.format(word))
-
-    return return_vector
-
-
-def word_bag_to_vector(vocabulary_list, input_set):
-    '''
-        Vectorize vocabulary list -- bag of words
-    '''
-    return_vector = [0] * len(vocabulary_list)
-
-    for word in input_set:
-        if word in vocabulary_list:
-            return_vector[vocabulary_list.index(word)] += 1
 
     return return_vector
 
@@ -104,70 +96,3 @@ def classifier(test_vector, class_0_vector, class_1_vector, class_1_prob):
         return 1
     else:
         return 0
-
-
-if __name__ == '__main__':
-    from random import uniform
-
-    def process_documents():
-        ''' 
-            process documents
-            returns ham and spam documents as tuple
-        '''
-        abs_path = '/media/gtron/files/ml/ml/classification/bayes/'
-        ham_documents = []
-        spam_documents = []
-        for i in range(1, 26):
-            ham_documents.append(tokenize(load_document('{}email/ham/{}.txt'.format(abs_path, str(i)))))
-            spam_documents.append(tokenize(load_document('{}email/spam/{}.txt'.format(abs_path, str(i)))))
-    
-        return ham_documents, spam_documents
-    
-
-    
-    def spam_test(documents):
-        ''' test documents for spam '''
-        vocabulary_list = create_vocabulary_list(documents)
-
-        classes = zeros(25, dtype=int).tolist() + ones(25, dtype=int).tolist()
-
-        docs_copy = documents[:]
-
-        training_set = []
-        training_classes = []
-
-        test_set = []
-        test_classes = []
-
-        for _ in range(10):
-            rand_idx = int(uniform(0, len(docs_copy)))
-            test_set.append(docs_copy[rand_idx])
-            test_classes.append(classes[rand_idx])
-            del(docs_copy[rand_idx])
-            del(classes[rand_idx])
-        
-        training_classes = classes
-
-        for doc in docs_copy:
-            training_set.append(word_set_to_vector(vocabulary_list, doc))
-        
-        p0v, p1v, p_spam = trainer(array(training_set), array(training_classes))
-
-        error_count = 0
-
-        for idx, doc in enumerate(test_set):
-            word_vector = word_set_to_vector(vocabulary_list, doc)
-            if classifier(array(word_vector), p0v, p1v, p_spam) != test_classes[idx]:
-                error_count += 1
-        
-        return float(error_count) / len(test_set)
-
-
-    hams, spams = process_documents()
-
-    err_result = 0.0
-    for _ in range(10):
-        err_result += spam_test(hams + spams)
-
-    print(err_result / 10)
-
