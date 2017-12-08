@@ -4,6 +4,7 @@
 
 from random import uniform
 from numpy import zeros, ones, array, log
+
 from bayes import tokenize, load_document,\
     create_vocabulary_list, word_to_vector, trainer, classifier
 
