@@ -16,7 +16,7 @@ def calculate_frequency(vocabulary_list, full_text):
     occurences = {}
     for token in vocabulary_list:
         occurences[token] = full_text.count(token)
-    
+
     return sorted(occurences.items(), key=itemgetter(1), reverse=True)[:30]
 
 
@@ -26,33 +26,36 @@ def process_feeds(feeds):
     feed_1 = feeds[1]['entries']
 
     min_length = min(len(feed_0), len(feed_1))
-    
+
     classes = []
     processed_feeds = []
-    
+
     for i in range(min_length):
         processed_feeds.append(tokenize(feed_0[i]['summary']))
         classes.append(0)
         processed_feeds.append(tokenize(feed_1[i]['summary']))
         classes.append(1)
-    
-    return processed_feeds
 
-def local_attitudes(feeds):
+    return processed_feeds, classes
+
+def local_attitudes(in_feeds, in_classes):
     '''
         access two RSS feeds
         to find local frequency words used in personal ads
     '''
+    feeds = in_feeds[:]
+    classes = in_classes[:]
+
     vocabulary_list = create_vocabulary_list(feeds)
 
     top_30_words = calculate_frequency(vocabulary_list, feeds)
 
     # remove most frequently occuring words
     # --------  try not doin this ------------
-    for most_freq in top_30_words:
-        if most_freq[0] in vocabulary_list:
-            vocabulary_list.remove(most_freq[0])
-    
+    # for most_freq in top_30_words:
+    #     if most_freq[0] in vocabulary_list:
+    #         vocabulary_list.remove(most_freq[0])
+
     training_set = []
     training_classes = []
 
@@ -61,7 +64,7 @@ def local_attitudes(feeds):
 
     for _ in range(20):
         rand_idx = int(uniform(0, len(feeds)))
-
+        print(len(feeds), rand_idx)
         test_set.append(feeds[rand_idx])
         test_classes.append(classes[rand_idx])
 
@@ -81,25 +84,27 @@ def local_attitudes(feeds):
     for idx, feed in enumerate(test_set):
         word_vector = word_to_vector(
             vocabulary_list, feed, word_occurences='bag')
-        
+
         if classifier(array(word_vector), p0v, p1v, p_jargon) != test_classes[idx]:
             error_count += 1
-        
-    return float(error_count) / len(test_set)
+
+    return vocabulary_list, p0v, p1v, float(error_count) / len(test_set)
 
 def main():
     ''' run script '''
     feeds = []
 
-    feeds[0] = parse()
-    feeds[1] = parse()
-
-    processed_feeds = process_feeds(feeds)
+    feeds.append(parse('http://newyork.craigslist.org/stp/index.rss'))
+    feeds.append(parse('http://sfbay.craigslist.org/stp/index.rss'))
+    
+    processed_feeds, classes = process_feeds(feeds)
 
     err_result = 0.0
     for _ in range(10):
-        err_result += local_attitudes(processed_feeds)
-    
+        vl_, p0_, p1_, err = local_attitudes(processed_feeds, classes)
+        print(err)
+        err_result += err
+
     print(err_result / 10)
 
 main()
