@@ -38,6 +38,7 @@ def process_feeds(feeds):
 
     return processed_feeds, classes
 
+
 def local_attitudes(in_feeds, in_classes):
     '''
         access two RSS feeds
@@ -52,9 +53,9 @@ def local_attitudes(in_feeds, in_classes):
 
     # remove most frequently occuring words
     # --------  try not doin this ------------
-    # for most_freq in top_30_words:
-    #     if most_freq[0] in vocabulary_list:
-    #         vocabulary_list.remove(most_freq[0])
+    for most_freq in top_30_words:
+        if most_freq[0] in vocabulary_list:
+            vocabulary_list.remove(most_freq[0])
 
     training_set = []
     training_classes = []
@@ -64,7 +65,7 @@ def local_attitudes(in_feeds, in_classes):
 
     for _ in range(20):
         rand_idx = int(uniform(0, len(feeds)))
-        print(len(feeds), rand_idx)
+
         test_set.append(feeds[rand_idx])
         test_classes.append(classes[rand_idx])
 
@@ -90,19 +91,47 @@ def local_attitudes(in_feeds, in_classes):
 
     return vocabulary_list, p0v, p1v, float(error_count) / len(test_set)
 
+
+def get_top_words(feeds, classes):
+    '''
+        display locally used words
+    '''
+    vocabulary_list, p0v, p1v, p_ = local_attitudes(feeds, classes)
+    
+    top_ny = []
+    top_sf = []
+
+    for i in range(len(p0v)):
+        if p0v[i] > -6.0:
+            top_ny.append((vocabulary_list[i], p0v[i]))
+
+        if p1v[i] > -6.0:
+            top_sf.append((vocabulary_list[i], p1v[i]))
+
+    print('NY*'*10)
+    for item in sorted(top_ny, key=lambda pair: pair[1], reverse=True):
+        print(item[0])
+
+    print('SF*'*10)
+    for item in sorted(top_sf, key=lambda pair: pair[1], reverse=True):
+        print(item[0])
+
+
 def main():
     ''' run script '''
     feeds = []
 
     feeds.append(parse('http://newyork.craigslist.org/stp/index.rss'))
     feeds.append(parse('http://sfbay.craigslist.org/stp/index.rss'))
-    
+
     processed_feeds, classes = process_feeds(feeds)
+
+    get_top_words(processed_feeds, classes)
 
     err_result = 0.0
     for _ in range(10):
         vl_, p0_, p1_, err = local_attitudes(processed_feeds, classes)
-        print(err)
+
         err_result += err
 
     print(err_result / 10)
