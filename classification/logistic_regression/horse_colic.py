@@ -52,7 +52,7 @@ def colic_test():
 
             if int(classifier(array(line_array), train_weights)) != int(curr_line[21]):
                 error_count += 1
-    
+
     error_rate = float(error_count) / num_test_vectors
 
     print('error rate: {}'.format(error_rate))
@@ -65,7 +65,7 @@ def run_tests(num):
 
     for k in range(num):
         error_sum += colic_test()
-    
+
     print('after {} iterations the average error rate is: {}'.format(num, (error_sum / float(num))))
 
 run_tests(10)
