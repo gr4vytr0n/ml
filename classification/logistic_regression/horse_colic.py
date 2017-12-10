@@ -50,8 +50,8 @@ def colic_test():
             for i in range(21):
                 line_array.append(float(curr_line[i]))
 
-                if int(classifier(array(line_array), train_weights)) != int(curr_line[21]):
-                    error_count += 1
+            if int(classifier(array(line_array), train_weights)) != int(curr_line[21]):
+                error_count += 1
     
     error_rate = float(error_count) / num_test_vectors
 
