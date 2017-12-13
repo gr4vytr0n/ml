@@ -2,7 +2,7 @@
     support vector machines
 '''
 from random import uniform
-from numpy import mat, shape, multiply, zeros, abs, nonzero
+from numpy import mat, shape, multiply, zeros, abs, nonzero, exp, sign
 
 
 '''
@@ -37,7 +37,7 @@ def selectJ(i, oS, Ei):
     max_delta_E = 0
     Ej = 0
     oS.e_cache[i] = [1, Ei]
-    valid_E_cache_list = nonzeros(oS.e_cache[:, 0].A)[0]
+    valid_E_cache_list = nonzero(oS.e_cache[:, 0].A)[0]
     if (len(valid_E_cache_list)) > 1:
         for k in valid_E_cache_list:
             if k == i:
@@ -75,7 +75,7 @@ def inner_L(i, oS):
         if L == H:
             print('L == H')
             return 0
-        eta = 2.0 * oS.K[i, j] - oS.K[i, i]- oS.K[j, j]
+        eta = 2.0 * oS.K[i, j] - oS.K[i, i] - oS.K[j, j]
         if eta >= 0:
             print('eta >= 0')
             return 0
@@ -85,28 +85,29 @@ def inner_L(i, oS):
         if (abs(oS.alphas[j] - alphaJold) < 0.00001):
             print('j not moving enough')
             return 0
-        oS.alphas[i] += oS.labels[j] * oS.labels[j] * \
+        oS.alphas[i] += oS.labels[j] * oS.labels[i] * \
                         (alphaJold - oS.alphas[j])
         updateEk(oS, i)
-        b1 = oS.b - Ej - oS.labels[i] * (oS.alphas[i] - alphaIold) * \
+        b1 = oS.b - Ei - oS.labels[i] * (oS.alphas[i] - alphaIold) * \
              oS.K[i, i]  - oS.labels[j] * \
              (oS.alphas[j] - alphaJold) * oS.K[i, j]
         b2 = oS.b - Ej - oS.labels[i] * (oS.alphas[i] - alphaIold) * \
              oS.K[i, j]  - oS.labels[j] * \
-             (oS.alphas[j] - alphaJold) * oS.dataset[j, j]
+             (oS.alphas[j] - alphaJold) * oS.K[j, j]
         if (0 < oS.alphas[i]) and (oS.const > oS.alphas[i]):
             oS.b = b1
         elif (0 < oS.alphas[j]) and (oS.const > oS.alphas[j]):
             oS.b = b2
         else:
-            return 1
+            oS.b = (b1 + b2) / 2.0
+        return 1
     else:
         return 0
 
 
 def platt_smo(dataset, labels, const, tol, max_iter, k_tuple = ('lin', 0)):
     ''' complete implementation of Platt's SMO algorithm '''
-    oS = OptStruct(mat(dataset), mat(labels).transpose(), const, tol)
+    oS = OptStruct(mat(dataset), mat(labels).transpose(), const, tol, k_tuple)
     iter = 0
     entire_set = True
     alpha_pairs_changed = 0
@@ -272,18 +273,55 @@ def calc_Ws(alphas, dataset, labels):
     return w
 
 
+def test_rbf(k1=1.3):
+    ''' radial bias function kernel '''
+    dataset, labels = load_dset('/media/gtron/files/ml/ml/classification/' +
+                                'support_vector_machines/testSetRBF.txt')
+    b, alphas = platt_smo(dataset, labels, 200, 0.0001, 10000, ('rbf', k1))
+    dset_mat = mat(dataset)
+    lbls_mat = mat(labels).transpose()
+    sv_ind = nonzero(alphas.A > 0)[0]
+    sVs = dset_mat[sv_ind]
+    labelSV = lbls_mat[sv_ind]
+    print('there are {} support vectors'.format(shape(sVs)[0]))
+    m, n = shape(dset_mat)
+    error_cnt = 0
+    for i in range(m):
+        kernel_eval = kernel_trans(sVs, dset_mat[i, :], ('rbf', k1))
+        predict = kernel_eval.T * multiply(labelSV, alphas[sv_ind]) + b
+        if sign(predict) != sign(labels[i]):
+            error_cnt += 1
+    print('the training error rate is: {}'.format(float(error_cnt) / m))
+    dataset, labels = load_dset('/media/gtron/files/ml/ml/classification/' +
+                                'support_vector_machines/testSetRBF2.txt')
+    error_cnt = 0
+    dset_mat = mat(dataset)
+    lbls_mat = mat(labels).transpose()
+    m, n = shape(dset_mat)
+    for i in range(m):
+        kernel_eval = kernel_trans(sVs, dset_mat[i, :], ('rbf', k1))
+        predict = kernel_eval.T * multiply(labelSV, alphas[sv_ind]) + b
+        if sign(predict) != sign(labels[i]):
+            error_cnt += 1
+        print('the test error rate is: {}'.format(float(error_cnt) / m))
+
+
 def main(filename):
     ''' run script '''
-    dataset, labels = load_dset(filename)
+    
+    # test rbf kernel
+    test_rbf()
+    
+    # dataset, labels = load_dset(filename)
 
     # b, alphas = simple_smo(dataset, labels, 0.6, 0.001, 40)
-    b, alphas = simple_smo(dataset, labels, 0.6, 0.001, 40)
+    # b, alphas = simple_smo(dataset, labels, 0.6, 0.001, 40)
 
-    ws = calc_Ws(alphas, dataset, labels)
-    dmat = mat(dataset)
-    for i in range(10):
-        print(dmat[i] * mat(ws) + b)
-        print(labels[i])
+    # ws = calc_Ws(alphas, dataset, labels)
+    # dmat = mat(dataset)
+    # for i in range(10):
+    #     print(dmat[i] * mat(ws) + b)
+    #     print(labels[i])
 
     # print(b)
     # print(alphas[alphas > 0])
