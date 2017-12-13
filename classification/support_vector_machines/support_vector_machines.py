@@ -8,9 +8,59 @@ from numpy import mat, shape, multiply, zeros, abs
 '''
     SMO (sequential minimal optimization)
 '''
+class OptStruct:
+    ''' data structure to hold properties of platt_smo '''
+    def __init__(self, dataset, labels, const, tol):
+        self.dataset = dataset
+        self.labels = labels
+        self.const = const
+        self.tol = tol
+        self.m = shape(dataset)[0]
+        self.alphas = mat(zeros((self.m, 1)))
+        self.b = 0
+        self.e_cache = mat(zeros((self.m, 2)))
+
+
+def calc_Ek(oS, k):
+    fXk = float(multiply(oS.alphas, oS.labels).T * \
+                (oS.dataset * oS.dataset[k, :].T)) + oS.b
+    Ek = fXk - float(oS.labels[k])
+
+    return Ek
+
+
+def selectJ(i, oS, Ei):
+    maxK = -1
+    max_delta_E = 0
+    Ej = 0
+    oS.e_cache[i] = [1, Ei]
+    valid_E_cache_list = nonzeros(oS.e_cache[:, 0].A)[0]
+    if (len(valid_E_cache_list)) > 1:
+        for k in valid_E_cache_list:
+            if k == i:
+                continue
+            Ek = calc_Ek(oS, k)
+            delta_E = abs(Ei - Ek)
+            if (delta_E > max_delta_E):
+                maxK = k
+                max_delta_E = delta_E
+                Ej = Ek
+        return maxK, Ej
+    else:
+        j = random_int(i, oS.m)
+        Ej = calc_Ek(oS, j)
+    
+    return j, Ej
+
+def updateEk(oS, k):
+    Ek = calc_Ek(oS, k)
+    oS.e_cache[k] = [1, Ek]
+
+
 def platt_smo():
     ''' complete implementation of Platt's SMO algorithm '''
     pass
+
 
 def simple_smo(dataset, labels, const, tol, max_iter):
     '''
