@@ -8,7 +8,9 @@ from numpy import mat, shape, multiply, zeros, abs
 '''
     SMO (sequential minimal optimization)
 '''
-
+def platt_smo():
+    ''' complete implementation of Platt's SMO algorithm '''
+    pass
 
 def simple_smo(dataset, labels, const, tol, max_iter):
     '''
