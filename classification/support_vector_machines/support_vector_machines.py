@@ -2,7 +2,7 @@
     support vector machines
 '''
 from random import uniform
-from numpy import mat, shape, multiply, zeros, abs
+from numpy import mat, shape, multiply, zeros, abs, nonzero
 
 
 '''
@@ -10,7 +10,7 @@ from numpy import mat, shape, multiply, zeros, abs
 '''
 class OptStruct:
     ''' data structure to hold properties of platt_smo '''
-    def __init__(self, dataset, labels, const, tol):
+    def __init__(self, dataset, labels, const, tol, k_tuple):
         self.dataset = dataset
         self.labels = labels
         self.const = const
@@ -19,11 +19,14 @@ class OptStruct:
         self.alphas = mat(zeros((self.m, 1)))
         self.b = 0
         self.e_cache = mat(zeros((self.m, 2)))
+        self.K = mat(zeros((self.m, self.m)))
+        for i in range(self.m):
+            self.K[:, i] = kernel_trans(self.dataset, self.dataset[i, :], k_tuple)
 
 
 def calc_Ek(oS, k):
     fXk = float(multiply(oS.alphas, oS.labels).T * \
-                (oS.dataset * oS.dataset[k, :].T)) + oS.b
+                oS.K[:, k] + oS.b)
     Ek = fXk - float(oS.labels[k])
 
     return Ek
@@ -56,10 +59,79 @@ def updateEk(oS, k):
     Ek = calc_Ek(oS, k)
     oS.e_cache[k] = [1, Ek]
 
+def inner_L(i, oS):
+    Ei = calc_Ek(oS, i)
+    if ((oS.labels[i] * Ei < -oS.tol) and (oS.alphas[i] < oS.const)) or \
+       ((oS.labels[i] * Ei > oS.tol) and (oS.alphas[i] > 0)):
+        j, Ej = selectJ(i, oS, Ei)
+        alphaIold = oS.alphas[i].copy()
+        alphaJold = oS.alphas[j].copy()
+        if (oS.labels[i] != oS.labels[j]):
+            L = max(0, int(oS.alphas[j] - oS.alphas[i]))
+            H = min(oS.const, oS.const + int(oS.alphas[j] - oS.alphas[i]))
+        else:
+            L = max(0, int(oS.alphas[j] + oS.alphas[i]) - oS.const)
+            H = min(oS.const, int(oS.alphas[j] + oS.alphas[i]))
+        if L == H:
+            print('L == H')
+            return 0
+        eta = 2.0 * oS.K[i, j] - oS.K[i, i]- oS.K[j, j]
+        if eta >= 0:
+            print('eta >= 0')
+            return 0
+        oS.alphas[j] -= oS.labels[j] * (Ei - Ej) / eta
+        oS.alphas[j] = clip_alpha(oS.alphas[j], H, L)
+        updateEk(oS, j)
+        if (abs(oS.alphas[j] - alphaJold) < 0.00001):
+            print('j not moving enough')
+            return 0
+        oS.alphas[i] += oS.labels[j] * oS.labels[j] * \
+                        (alphaJold - oS.alphas[j])
+        updateEk(oS, i)
+        b1 = oS.b - Ej - oS.labels[i] * (oS.alphas[i] - alphaIold) * \
+             oS.K[i, i]  - oS.labels[j] * \
+             (oS.alphas[j] - alphaJold) * oS.K[i, j]
+        b2 = oS.b - Ej - oS.labels[i] * (oS.alphas[i] - alphaIold) * \
+             oS.K[i, j]  - oS.labels[j] * \
+             (oS.alphas[j] - alphaJold) * oS.dataset[j, j]
+        if (0 < oS.alphas[i]) and (oS.const > oS.alphas[i]):
+            oS.b = b1
+        elif (0 < oS.alphas[j]) and (oS.const > oS.alphas[j]):
+            oS.b = b2
+        else:
+            return 1
+    else:
+        return 0
 
-def platt_smo():
+
+def platt_smo(dataset, labels, const, tol, max_iter, k_tuple = ('lin', 0)):
     ''' complete implementation of Platt's SMO algorithm '''
-    pass
+    oS = OptStruct(mat(dataset), mat(labels).transpose(), const, tol)
+    iter = 0
+    entire_set = True
+    alpha_pairs_changed = 0
+    while (iter < max_iter) and ((alpha_pairs_changed > 0) or (entire_set)):
+        alpha_pairs_changed = 0
+        if entire_set:
+            for i in range(oS.m):
+                alpha_pairs_changed += inner_L(i, oS)
+            print('fullset, iter: {} i: {} pairs changed: {}'.format( \
+                  iter, i, alpha_pairs_changed))
+            iter += 1
+        else:
+            non_bound_Is = nonzero((oS.alphas.A > 0) * (oS.alphas.A < const))[0]
+            for i in non_bound_Is:
+                alpha_pairs_changed += inner_L(i, oS)
+                print('non-bound, iter: {} i: {}, pairs changed: {}'.format( \
+                      iter, i, alpha_pairs_changed))
+            iter += 1
+        if entire_set:
+            entire_set = False
+        elif (alpha_pairs_changed == 0):
+            entire_set = True
+        print('iteration number: {}'.format(iter))
+    
+    return oS.b, oS.alphas
 
 
 def simple_smo(dataset, labels, const, tol, max_iter):
@@ -172,18 +244,53 @@ def clip_alpha(alpha, h_val, l_val):
     return alpha
 
 
+def kernel_trans(X, A, k_tuple):
+    ''' support for kernels '''
+    m, n = shape(X)
+    K = mat(zeros((m, 1)))
+    if k_tuple[0] == 'lin':
+        K = X * A.T
+    elif k_tuple[0] == 'rbf':
+        for j in range(m):
+            delta_row = X[j, :] - A
+            K[j] = delta_row * delta_row.T
+        K = exp(K / (-1 * k_tuple[1] ** 2))
+    else:
+        raise NameError('o shit!!! -- what kernel is this???')
+    
+    return K
+
+
+def calc_Ws(alphas, dataset, labels):
+    ''' calculate ws '''
+    dst = mat(dataset)
+    lbls = mat(labels).transpose()
+    m, n = shape(dst)
+    w = zeros((n, 1))
+    for i in range(m):
+        w += multiply(alphas[i] * lbls[i], dst[i, :].T)
+    return w
+
+
 def main(filename):
     ''' run script '''
     dataset, labels = load_dset(filename)
 
+    # b, alphas = simple_smo(dataset, labels, 0.6, 0.001, 40)
     b, alphas = simple_smo(dataset, labels, 0.6, 0.001, 40)
 
-    print(b)
-    print(alphas[alphas > 0])
-    print(shape(alphas[alphas > 0]))
-    for i in range(100):
-        if alphas[i] > 0.0:
-            print(dataset[i], labels[i])
+    ws = calc_Ws(alphas, dataset, labels)
+    dmat = mat(dataset)
+    for i in range(10):
+        print(dmat[i] * mat(ws) + b)
+        print(labels[i])
+
+    # print(b)
+    # print(alphas[alphas > 0])
+    # print(shape(alphas[alphas > 0]))
+    # for i in range(100):
+    #     if alphas[i] > 0.0:
+    #         print(dataset[i], labels[i])
 
 
 main('/media/gtron/files/ml/ml/classification/' +
