@@ -106,10 +106,12 @@ def majority_count(class_list):
     return sorted_class_count[0][0]
 
 
-def create_tree(dataset, labels):
+def create_tree(dataset, orig_labels):
     '''
         recursively create decision tree
     '''
+    # create copy of labels
+    labels = orig_labels.copy()
 
     # list of sample classes
     class_list = [example[-1] for example in dataset]

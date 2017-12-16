@@ -1,10 +1,13 @@
 '''
     logistic regression
 '''
+
+
 from math import exp
 from random import uniform
 from numpy import mat, shape, ones, exp, array, arange, sum, ndarray
 import matplotlib.pyplot as plt
+
 
 def load_dataset(filename):
     ''' load data '''

@@ -8,17 +8,6 @@ from re import split
 from numpy import ones, array, log
 
 
-def load_document(filename):
-    '''
-        Open file(s) and return list of contents
-    '''
-    read_file = ''
-    with open(filename, encoding='Windows-1252') as document:
-        read_file = document.read()
-
-    return read_file
-
-
 def tokenize(the_string):
     '''
         Tokenize string
