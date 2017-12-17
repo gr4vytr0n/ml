@@ -73,7 +73,7 @@ def plot_best_fit(wei):
         plt_weights = wei.getA()
 
     d_set, l_set = load_dataset(
-        '/media/gtron/files/ml/ml/classification/logistic_regression/testSet.txt')
+        '/media/gtron/files/ml/ml/datasets/testSet.txt')
     dataset_array = array(d_set)
     n = shape(dataset_array)[0]
     x_coord_1 = []
@@ -103,7 +103,7 @@ def plot_best_fit(wei):
 
 if __name__ == '__main__':
     dataset, labels = load_dataset(
-        '/media/gtron/files/ml/ml/classification/logistic_regression/testSet.txt')
+        '/media/gtron/files/ml/ml/datasets/testSet.txt')
 
     weights = stochastic_gradient_ascent(array(dataset), labels)
     
