@@ -6,7 +6,26 @@ from random import uniform
 from operator import itemgetter
 from numpy import array
 from feedparser import parse
+
+from os import getcwd, chdir
+from sys import path
+path.insert(0, '/media/gtron/files/ml/ml/' +
+               'classification/bayes/')
 from bayes import tokenize, create_vocabulary_list, word_to_vector, trainer, classifier
+
+
+def load_stop_words():
+    ''' load stop words list '''
+    save_cwd = getcwd()
+    chdir('/media/gtron/files/ml/ml/classification/applications/bayes')
+
+    with open('english_stop_words.txt') as stop_words:
+        stop_words_list = [l.strip().split('\n') for l in stop_words]
+
+    chdir(save_cwd)
+
+    return stop_words_list
+
 
 def calculate_frequency(vocabulary_list, full_text):
     '''
@@ -52,10 +71,15 @@ def local_attitudes(in_feeds, in_classes):
     top_30_words = calculate_frequency(vocabulary_list, feeds)
 
     # remove most frequently occuring words
-    # --------  try not doin this ------------
     for most_freq in top_30_words:
         if most_freq[0] in vocabulary_list:
             vocabulary_list.remove(most_freq[0])
+
+    # remove stop words
+    stop_words = load_stop_words()
+    for stop_word in stop_words:
+        if stop_word in vocabulary_list:
+            vocabulary_list.remove(stop_word)
 
     training_set = []
     training_classes = []
