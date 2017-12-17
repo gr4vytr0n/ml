@@ -5,8 +5,12 @@
 from random import uniform
 from numpy import zeros, ones, array, log
 
+from sys import path
+path.insert(0, '/media/gtron/files/ml/ml/' +
+               'classification/bayes/')
+
 from bayes import tokenize, create_vocabulary_list, \
-                  word_to_vector, trainer, classifier
+    word_to_vector, trainer, classifier
 
 
 def load_document(filename):
@@ -25,7 +29,7 @@ def process_documents():
         process documents
         returns ham and spam documents as tuple
     '''
-    abs_path = '/media/gtron/files/ml/ml/classification/bayes/'
+    abs_path = '/media/gtron/files/ml/ml/datasets/'
     ham_documents = []
     spam_documents = []
     for i in range(1, 26):
@@ -78,6 +82,7 @@ def spam_test(documents):
 
     return float(error_count) / len(test_set)
 
+
 def main():
     ''' run script '''
     hams, spams = process_documents()
@@ -87,5 +92,6 @@ def main():
         err_result += spam_test(hams + spams)
 
     print(err_result / 10)
+
 
 main()

@@ -41,6 +41,7 @@ def word_to_vector(vocabulary_list, input_set, word_occurences='set'):
             if word_occurences == 'set':
                 return_vector[vocabulary_list.index(word)] = 1
             else:
+                # create bag of words
                 return_vector[vocabulary_list.index(word)] += 1
         else:
             print('The word: {} is not in my Vocabulary!'.format(word))
