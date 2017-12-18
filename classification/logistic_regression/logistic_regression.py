@@ -5,22 +5,25 @@
 
 from math import exp
 from random import uniform
+from sys import path
+from os import getcwd, chdir
 from numpy import mat, shape, ones, exp, array, arange, sum, ndarray
 import matplotlib.pyplot as plt
 
 
 def load_dataset(filename):
-    ''' load data '''
-    d_set = []
-    l_set = []
+    ''' load dataset '''
+    savecwd = getcwd()
+    chdir('/media/gtron/files/ml/ml/datasets/')
 
     with open(filename) as file:
-        for line in file.readlines():
-            line_list = line.strip().split()
-            d_set.append([1.0, float(line_list[0]), float(line_list[1])])
-            l_set.append(int(line_list[2]))
+        lines = [line.strip().split() for line in file.readlines()]
+        dataset = [[1.0, float(line[0]), float(line[1])] for line in lines]
+        labels = [int(line[2]) for line in lines]
 
-    return d_set, l_set
+    chdir(savecwd)
+
+    return dataset, labels
 
 
 def sigmoid(in_x):
@@ -72,8 +75,7 @@ def plot_best_fit(wei):
     else:
         plt_weights = wei.getA()
 
-    d_set, l_set = load_dataset(
-        '/media/gtron/files/ml/ml/datasets/testSet.txt')
+    d_set, l_set = load_dataset('testSet.txt')
     dataset_array = array(d_set)
     n = shape(dataset_array)[0]
     x_coord_1 = []
@@ -102,8 +104,7 @@ def plot_best_fit(wei):
 
 
 if __name__ == '__main__':
-    dataset, labels = load_dataset(
-        '/media/gtron/files/ml/ml/datasets/testSet.txt')
+    dataset, labels = load_dataset('testSet.txt')
 
     weights = stochastic_gradient_ascent(array(dataset), labels)
     
