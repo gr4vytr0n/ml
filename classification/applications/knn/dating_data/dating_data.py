@@ -8,9 +8,9 @@ from numpy import array
 from sys import path
 from os import getcwd
 
-path.insert(0, '/media/gtron/files/ml/ml/utils/')
-path.insert(0, '/media/gtron/files/ml/ml/datasets/')
-path.insert(0, '/media/gtron/files/ml/ml/classification/knn/')
+path.insert(0, getcwd() + '/utils/')
+path.insert(0, getcwd() + '/datasets/')
+path.insert(0, getcwd() + '/classification/knn/')
 
 from process_data import process_data
 from knn import classify

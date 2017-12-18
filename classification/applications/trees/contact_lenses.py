@@ -4,23 +4,21 @@
 '''
 
 from os import getcwd, chdir
-from sys import path
-path.insert(0, '/media/gtron/files/ml/ml/classification/trees/')
-
-from decision_trees import create_tree
-
+from  sys import path
+path.insert(0, getcwd() + '/classification/trees')
+from decision_trees import *
 
 def process_dataset():
     ''' prepare dataset for building tree '''
-    savecwd = getcwd()
+    save_cwd = getcwd()
 
-    chdir('/media/gtron/files/ml/ml/datasets/')
+    chdir(save_cwd + '/datasets/')
     with open('lenses.txt') as file:
         dataset = [i.strip().split('\t') for i in file.readlines()]
     
     labels = ['age', 'prescript', 'astigmatic', 'tearRate']
 
-    chdir(savecwd)
+    chdir(save_cwd)
 
     return dataset, labels
 

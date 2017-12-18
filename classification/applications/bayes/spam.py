@@ -4,10 +4,9 @@
 
 from random import uniform
 from numpy import zeros, ones, array, log
-
+from os import getcwd
 from sys import path
-path.insert(0, '/media/gtron/files/ml/ml/' +
-               'classification/bayes/')
+path.insert(0, getcwd() + '/classification/bayes/')
 
 from bayes import tokenize, create_vocabulary_list, \
     word_to_vector, trainer, classifier
@@ -29,7 +28,7 @@ def process_documents():
         process documents
         returns ham and spam documents as tuple
     '''
-    abs_path = '/media/gtron/files/ml/ml/datasets/'
+    abs_path = getcwd() + '/datasets/'
     ham_documents = []
     spam_documents = []
     for i in range(1, 26):

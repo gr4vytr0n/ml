@@ -3,13 +3,13 @@
 '''
 
 
-from sys import path
-from os import getcwd, listdir, chdir
+from os import getcwd, listdir, chdir, path as os_path
 from time import perf_counter
 from numpy import zeros, array
 
-path.insert(0, '/media/gtron/files/ml/ml/classification/knn/')
-from knn import classify
+from  sys import path, argv
+path.insert(0, getcwd() + '/classification/knn')
+from knn import *
 
 
 def build_file_lists(path, dirs):
@@ -73,7 +73,7 @@ def classify_handwriting(test_set, train_set, f_names):
 
 
 # create arrays of sample vectors for test and training datasets
-file_path = '/media/gtron/files/ml/ml/datasets/hw/'
+file_path = getcwd() + '/datasets/hw/'
 file_dirs = ['testDigits', 'trainingDigits']
 test_files, train_files, filenames = build_file_lists(file_path, file_dirs)
 test_set = to_vectors(test_files)

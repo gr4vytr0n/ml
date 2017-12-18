@@ -1,13 +1,10 @@
 '''
     use decision tree to classifiy
 '''
-
-from sys import path
-path.insert(0, '/media/gtron/files/ml/ml/' +
-               'classification/trees/')
-
-
-from decision_trees import create_tree
+from os import getcwd
+from  sys import path
+path.insert(0, getcwd() + '/classification/trees/')
+from decision_trees import *
 
 
 def create_dataset():

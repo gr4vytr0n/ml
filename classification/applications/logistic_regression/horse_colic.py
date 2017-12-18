@@ -2,9 +2,14 @@
     use logistic regression to find out if a horse
     with colic will live or die
 '''
-from numpy import sum, array
-from logistic_regression import sigmoid, stochastic_gradient_ascent
 
+from os import getcwd, chdir
+
+from numpy import sum, array
+
+from  sys import path
+path.insert(0, getcwd() + '/classification/logistic_regression/')
+from logistic_regression import *
 
 def classifier(in_x, weights):
     ''' classify vector '''
@@ -20,10 +25,13 @@ def colic_test():
     '''
         run script to classify
     '''
+    save_cwd = getcwd()
+    chdir(save_cwd + '/datasets/horse_colic/')
+
     training_set = []
     training_labels = []
 
-    with open('/media/gtron/files/ml/ml/classification/logistic_regression/horseColicTraining.txt') as train_file:
+    with open('horseColicTraining.txt') as train_file:
         for line in train_file.readlines():
             curr_line = line.strip().split('\t')
             line_array = []
@@ -40,7 +48,7 @@ def colic_test():
     error_count = 0
     num_test_vectors = 0.0
 
-    with open('/media/gtron/files/ml/ml/classification/logistic_regression/horseColicTest.txt') as test_file:
+    with open('horseColicTest.txt') as test_file:
         for line in test_file.readlines():
             num_test_vectors += 1.0
 
@@ -56,6 +64,8 @@ def colic_test():
     error_rate = float(error_count) / num_test_vectors
 
     print('error rate: {}'.format(error_rate))
+
+    chdir(save_cwd)
 
     return error_rate
 

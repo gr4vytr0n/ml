@@ -9,15 +9,14 @@ from feedparser import parse
 
 from os import getcwd, chdir
 from sys import path
-path.insert(0, '/media/gtron/files/ml/ml/' +
-               'classification/bayes/')
+path.insert(0, getcwd() + '/classification/bayes/')
 from bayes import tokenize, create_vocabulary_list, word_to_vector, trainer, classifier
 
 
 def load_stop_words():
     ''' load stop words list '''
     save_cwd = getcwd()
-    chdir('/media/gtron/files/ml/ml/classification/applications/bayes')
+    chdir(save_cwd + '/classification/applications/bayes')
 
     with open('english_stop_words.txt') as stop_words:
         stop_words_list = [l.strip().split('\n') for l in stop_words]
