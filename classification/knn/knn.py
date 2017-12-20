@@ -7,8 +7,9 @@
     * classify test data as majority class from k nearest neighbors
 '''
 
+from time import perf_counter
 from operator import itemgetter
-from numpy import tile
+from numpy import tile, array, sqrt, sum
 
 
 def classify(test_set, dataset, labels, k):
@@ -19,12 +20,29 @@ def classify(test_set, dataset, labels, k):
     # number of samples in dataset
     dataset_size = dataset.shape[0]
 
+    perf_start = perf_counter()
+
     # get the Euclidian distance from test_set to each sample
+
+    # -----------perf: .04 - .05
+    # total errors: 11.0
+    # total error rate: 0.011627906976744186
+    # elapsed time: 50.603029335004976
     diff_mat = tile(test_set, (dataset_size, 1)) - dataset
     sq_diff_mat = diff_mat**2
     squared_distances = sq_diff_mat.sum(axis=1)
     distances = squared_distances**0.5
+
+    # -----------perf: .11 - .13
+    # total errors: 11.0
+    # total error rate: 0.011627906976744186
+    # elapsed time: 116.0061028659984
+    # distances = array([sqrt(sum((test_set - value)**2)) for value in dataset])
+
     sorted_distancess = distances.argsort()
+
+    perf_end = perf_counter()
+    print(perf_end - perf_start)
 
     # count occurences of classes in k nearest neighbors
     class_count = {}
