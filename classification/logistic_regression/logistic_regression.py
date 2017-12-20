@@ -7,28 +7,29 @@ from math import exp
 from random import uniform
 from sys import path
 from os import getcwd, chdir
-from numpy import mat, shape, ones, exp, array, arange, sum, ndarray
+from numpy import mat, shape, ones, exp, array, arange, sum, ndarray, logaddexp
 import matplotlib.pyplot as plt
 
 
 def load_dataset(filename):
     ''' load dataset '''
-    savecwd = getcwd()
-    chdir('/media/gtron/files/ml/ml/datasets/')
+    save_cwd = getcwd()
+    chdir(save_cwd + '/datasets/')
 
     with open(filename) as file:
         lines = [line.strip().split() for line in file.readlines()]
         dataset = [[1.0, float(line[0]), float(line[1])] for line in lines]
         labels = [int(line[2]) for line in lines]
 
-    chdir(savecwd)
+    chdir(save_cwd)
 
     return dataset, labels
 
 
 def sigmoid(in_x):
     ''' sigmoid function '''
-    return 1.0 / (1 + exp(-in_x))
+    # return 1.0 / (1.0 + exp(-in_x)) # causes overflow
+    return exp(-logaddexp(0, -in_x))
 
 
 def gradient_ascent(d_set, l_set):
