@@ -3,7 +3,9 @@
 '''
 from os import listdir, chdir, getcwd
 from numpy import zeros, array, mat, nonzero, multiply, sign, shape
-from support_vector_machines import platt_smo, kernel_trans
+from sys import path
+path.insert(0, getcwd() + '/classification/support_vector_machines/')
+from support_vector_machines import *
 
 
 def read_files(directory, filenames):
@@ -50,8 +52,8 @@ def load_images(dir_name):
 
 
 def test(k_tuple=('rbf', 10)):
-    CWD = getcwd()
-    train_dir_name = '/media/gtron/files/ml/ml/datasets/hw/trainingDigits/'
+    save_cwd = getcwd()
+    train_dir_name = getcwd() + '/datasets/hw/trainingDigits/'
     
     dset, labels = load_images(train_dir_name)
     
@@ -70,7 +72,7 @@ def test(k_tuple=('rbf', 10)):
         if sign(predict) != sign(labels[i]):
             error_count += 1
     print('the training error rate is: {}'.format(float(error_count) / m))
-    test_dir_name = '/media/gtron/files/ml/ml/datasets/hw/testDigits/'
+    test_dir_name = getcwd() + '/datasets/hw/testDigits/'
     dset, labels = load_images(test_dir_name)
     error_count = 0
     d_mat = mat(dset)
@@ -82,6 +84,3 @@ def test(k_tuple=('rbf', 10)):
         if sign(predict) != sign(labels[i]):
             error_count += 1
     print('the test error rate is: {}'.format(float(error_count) / m))
-
-
-test()

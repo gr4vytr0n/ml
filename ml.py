@@ -59,3 +59,12 @@ from plot_best_fit import test as best_fit_test
 sys.path.insert(0, CWD + '/classification/applications/logistic_regression/')
 from horse_colic import test as horse_colic_test
 
+# --------------------- support vector machines
+
+# svm test
+sys.path.insert(0, CWD + '/classification/applications/svm/')
+from svm_test import test as svm_test
+
+# svm handwriting test
+sys.path.insert(0, CWD + '/classification/applications/svm/')
+from svm_handwriting import test as svm_handwriting_test
