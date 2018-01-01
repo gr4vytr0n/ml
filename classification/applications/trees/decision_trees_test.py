@@ -4,8 +4,7 @@
 from os import getcwd
 from  sys import path
 path.insert(0, getcwd() + '/classification/trees/')
-from decision_trees import *
-
+from decision_trees import create_tree
 
 def create_dataset():
     ''' create dataset '''
@@ -44,8 +43,12 @@ def classify(input_tree, feature_labels, test_vector):
     
     return class_label
 
-dataset, labels = create_dataset()
+def test():
+    '''
+        run script
+    '''
+    dataset, labels = create_dataset()
 
-tree = create_tree(dataset, labels)
+    tree = create_tree(dataset, labels)
 
-print(classify(tree, labels, [1, 1]))
+    print(classify(tree, labels, [1, 1]))

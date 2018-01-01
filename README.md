@@ -1,6 +1,7 @@
 # Machine Learning
-* my notes -- studying ML in Action book
 
-# classification
-* k-Nearest neighbors
-* decision trees
+### Running scripts
+open python 3 shell
+>>> from ml import *
+run function related to script
+    >>>dating_data()

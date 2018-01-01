@@ -5,9 +5,9 @@
 
 from math import exp
 from random import uniform
-from sys import path
 from os import getcwd, chdir
-from numpy import mat, shape, ones, exp, array, arange, sum, ndarray, logaddexp
+
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -28,19 +28,18 @@ def load_dataset(filename):
 
 def sigmoid(in_x):
     ''' sigmoid function '''
-    # return 1.0 / (1.0 + exp(-in_x)) # causes overflow
-    return exp(-logaddexp(0, -in_x))
+    return np.exp(-np.logaddexp(0, -in_x))
 
 
 def gradient_ascent(d_set, l_set):
     ''' gradient ascent '''
-    dataset_matrix = mat(d_set)
-    labels_matrix = mat(l_set).transpose()
+    dataset_matrix = np.mat(d_set)
+    labels_matrix = np.mat(l_set).transpose()
 
-    m, n = shape(dataset_matrix)
+    m, n = np.shape(dataset_matrix)
     alpha = 0.001
     max_cycles = 500
-    weights = ones((n, 1))
+    weights = np.ones((n, 1))
 
     for _ in range(max_cycles):
         h = sigmoid(dataset_matrix * weights)
@@ -52,8 +51,8 @@ def gradient_ascent(d_set, l_set):
 
 def stochastic_gradient_ascent(d_set, l_set, num_iters=150):
     ''' stochastic gradient ascent '''
-    m, n = shape(d_set)
-    weights = ones(n)
+    m, n = np.shape(d_set)
+    weights = np.ones(n)
 
     for j in range(num_iters):
         d_idx = list(range(m))
@@ -65,20 +64,20 @@ def stochastic_gradient_ascent(d_set, l_set, num_iters=150):
             error = l_set[rand_idx] - h
             weights = weights + alpha * error * d_set[rand_idx]
             del d_idx[rand_idx]
-    
+
     return weights
 
 
 def plot_best_fit(wei):
     ''' ploy the decision boundary '''
-    if isinstance(wei, ndarray): 
+    if isinstance(wei, np.ndarray):
         plt_weights = wei
     else:
         plt_weights = wei.getA()
 
     d_set, l_set = load_dataset('testSet.txt')
-    dataset_array = array(d_set)
-    n = shape(dataset_array)[0]
+    dataset_array = np.array(d_set)
+    n = np.shape(dataset_array)[0]
     x_coord_1 = []
     y_coord_1 = []
     x_coord_2 = []
@@ -91,12 +90,12 @@ def plot_best_fit(wei):
         else:
             x_coord_2.append(dataset_array[i, 1])
             y_coord_2.append(dataset_array[i, 2])
-    
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(x_coord_1, y_coord_1, s=30, c='red', marker='s')
     ax.scatter(x_coord_2, y_coord_2, s=30, c='green')
-    x = arange(-3.0, 3.0, 0.1)
+    x = np.arange(-3.0, 3.0, 0.1)
     y = (-plt_weights[0] - plt_weights[1] * x) / plt_weights[2]
     ax.plot(x, y)
     plt.xlabel('X1')
@@ -107,6 +106,6 @@ def plot_best_fit(wei):
 if __name__ == '__main__':
     dataset, labels = load_dataset('testSet.txt')
 
-    weights = stochastic_gradient_ascent(array(dataset), labels)
-    
+    weights = stochastic_gradient_ascent(np.array(dataset), labels)
+
     plot_best_fit(weights)

@@ -71,17 +71,20 @@ def classify_handwriting(test_set, train_set, f_names):
     print('total errors: {}'.format(error_count))
     print('total error rate: {}'.format(error_count/float(len(test_set))))
 
+def test():
+    '''
+        run script
+    '''
+    # create arrays of sample vectors for test and training datasets
+    file_path = getcwd() + '/datasets/hw/'
+    file_dirs = ['testDigits', 'trainingDigits']
+    test_files, train_files, filenames = build_file_lists(file_path, file_dirs)
+    test_set = to_vectors(test_files)
+    train_set = to_vectors(train_files)
 
-# create arrays of sample vectors for test and training datasets
-file_path = getcwd() + '/datasets/hw/'
-file_dirs = ['testDigits', 'trainingDigits']
-test_files, train_files, filenames = build_file_lists(file_path, file_dirs)
-test_set = to_vectors(test_files)
-train_set = to_vectors(train_files)
+    t0 = perf_counter()
 
-t0 = perf_counter()
+    classify_handwriting(test_set, train_set, filenames)
 
-classify_handwriting(test_set, train_set, filenames)
-
-t1 = perf_counter()
-print('elapsed time: {}'.format(t1 - t0))
+    t1 = perf_counter()
+    print('elapsed time: {}'.format(t1 - t0))

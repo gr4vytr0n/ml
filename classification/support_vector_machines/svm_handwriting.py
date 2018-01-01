@@ -50,8 +50,11 @@ def load_images(dir_name):
 
 
 def test(k_tuple=('rbf', 10)):
+    CWD = getcwd()
     train_dir_name = '/media/gtron/files/ml/ml/datasets/hw/trainingDigits/'
+    
     dset, labels = load_images(train_dir_name)
+    
     b, alphas = platt_smo(dset, labels, 200, 0.0001, 10000, k_tuple)
     d_mat = mat(dset)
     l_mat = mat(labels).transpose()
@@ -81,9 +84,4 @@ def test(k_tuple=('rbf', 10)):
     print('the test error rate is: {}'.format(float(error_count) / m))
 
 
-def main():
-    ''' run script '''
-    test()    
-
-
-main()
+test()
