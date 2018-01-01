@@ -101,11 +101,3 @@ def plot_best_fit(wei):
     plt.xlabel('X1')
     plt.ylabel('X2')
     plt.show()
-
-
-if __name__ == '__main__':
-    dataset, labels = load_dataset('testSet.txt')
-
-    weights = stochastic_gradient_ascent(np.array(dataset), labels)
-
-    plot_best_fit(weights)

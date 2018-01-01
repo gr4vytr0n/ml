@@ -47,8 +47,13 @@ def classify(input_tree, feature_labels, test_vector):
     
     return class_label
 
-dataset, labels = process_dataset()
+def test():
+    '''
+        run script
+    '''
+        
+    dataset, labels = process_dataset()
 
-tree = create_tree(dataset, labels)
+    tree = create_tree(dataset, labels)
 
-print(classify(tree, labels, ['young', 'hyper', 'no', 'normal']))
+    print(classify(tree, labels, ['young', 'hyper', 'no', 'normal']))

@@ -140,7 +140,7 @@ def get_top_words(feeds, classes):
         print(item[0])
 
 
-def main():
+def test():
     ''' run script '''
     feeds = []
 
@@ -158,5 +158,3 @@ def main():
         err_result += err
 
     print(err_result / 10)
-
-main()

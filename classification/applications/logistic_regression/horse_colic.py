@@ -69,7 +69,7 @@ def colic_test():
 
     return error_rate
 
-def run_tests(num):
+def test(num):
     ''' run colic_test() num number of times '''
     error_sum = 0.0
 
@@ -77,5 +77,3 @@ def run_tests(num):
         error_sum += colic_test()
 
     print('after {} iterations the average error rate is: {}'.format(num, (error_sum / float(num))))
-
-run_tests(10)

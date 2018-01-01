@@ -82,7 +82,7 @@ def spam_test(documents):
     return float(error_count) / len(test_set)
 
 
-def main():
+def test():
     ''' run script '''
     hams, spams = process_documents()
 
@@ -91,6 +91,3 @@ def main():
         err_result += spam_test(hams + spams)
 
     print(err_result / 10)
-
-
-main()
