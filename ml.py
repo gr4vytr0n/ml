@@ -68,3 +68,9 @@ from svm_test import test as svm_test
 # svm handwriting test
 sys.path.insert(0, CWD + '/classification/applications/svm/')
 from svm_handwriting import test as svm_handwriting_test
+
+# --------------------- adaboost
+
+# adaboost test
+sys.path.insert(0, CWD + '/classification/applications/adaboost/')
+from adaboost_test import test as adaboost_test
