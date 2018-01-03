@@ -35,4 +35,4 @@ def test():
 
     D = mat(ones((5, 1)) / 5)
 
-    build_stump(d_mat, labels, D)
+    print(build_stump(d_mat, labels, D))
