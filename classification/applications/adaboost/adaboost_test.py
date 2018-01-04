@@ -27,6 +27,7 @@ def simple_dataset():
 
     return dset_mat, labels
 
+
 def test():
     '''
         run test script

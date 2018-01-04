@@ -74,3 +74,7 @@ from svm_handwriting import test as svm_handwriting_test
 # adaboost test
 sys.path.insert(0, CWD + '/classification/applications/adaboost/')
 from adaboost_test import test as adaboost_test
+
+# adaboost horse colic test
+sys.path.insert(0, CWD + '/classification/applications/adaboost/')
+from adaboost_horse_colic import test as adaboost_horse_colic
