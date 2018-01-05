@@ -82,9 +82,9 @@ def test():
     test_set = to_vectors(test_files)
     train_set = to_vectors(train_files)
 
-    t0 = perf_counter()
+    #t0 = perf_counter()
 
     classify_handwriting(test_set, train_set, filenames)
 
-    t1 = perf_counter()
-    print('elapsed time: {}'.format(t1 - t0))
+    #t1 = perf_counter()
+    #print('elapsed time: {}'.format(t1 - t0))

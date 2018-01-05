@@ -42,7 +42,7 @@ def classify(test_set, dataset, labels, k):
     sorted_distancess = distances.argsort()
 
     perf_end = perf_counter()
-    print(perf_end - perf_start)
+    #print(perf_end - perf_start)
 
     # count occurences of classes in k nearest neighbors
     class_count = {}
