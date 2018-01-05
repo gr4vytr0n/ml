@@ -38,8 +38,6 @@ def test():
     '''
 
     dataset, labels = load_dataset()
-
-    pd.set_option('display.max_rows', 10)
     
     le = preprocessing.LabelEncoder()
     encoded_labels = le.fit_transform(labels)
